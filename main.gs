@@ -62,19 +62,19 @@ function search(esnCardNumber, activeCell) {
       
       if(esnCards[i][1] == esnCardNumber && esnCards[i][1] != undefined){
         
-        // nº ESNcard
+        // ESNcard number
         sheetSearch.getRange(activeCell.getA1Notation()).setValue(esnCards[i][1]);
-        // nombre
+        // name
         sheetSearch.getRange(activeCell.getRow(),activeCell.getColumn() + 1).setValue(esnCards[i][2]);
-        // apellido
+        // surname
         sheetSearch.getRange(activeCell.getRow(), activeCell.getColumn() + 2).setValue(esnCards[i][3]);
-        // fecha de nacimiento
+        // date of birth
         sheetSearch.getRange(activeCell.getRow(), activeCell.getColumn() + 3).setValue(esnCards[i][4]);
-        // telefono
+        // phone number
         sheetSearch.getRange(activeCell.getRow(), activeCell.getColumn() + 4).setValue(esnCards[i][5]);
         // email
         sheetSearch.getRange(activeCell.getRow(), activeCell.getColumn() + 5).setValue(esnCards[i][6]);
-        // nacionalidad
+        // nationality
         sheetSearch.getRange(activeCell.getRow(), activeCell.getColumn() + 6).setValue(esnCards[i][7]);
         
         break;
