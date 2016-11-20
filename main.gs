@@ -5,8 +5,9 @@ var scriptProperties = PropertiesService.getScriptProperties();
 function onOpen() {
   SpreadsheetApp.getUi() // Or DocumentApp or FormApp.
       .createMenu('ESN')
-      .addItem('Configuration', 'showPromptConfiguration')
-      .addItem('Search ESNcard', 'showPromptSearch')
+      .addItem('Configuración', 'showPromptConfiguration')
+      .addItem('Buscar ESNcard', 'showPromptSearch')
+      .addItem('Rellenar rango', 'fillRange')
       .addToUi();
   
 }
@@ -33,8 +34,8 @@ function showPromptSearch() {
   var ui = SpreadsheetApp.getUi(); // Same variations.
 
   var result = ui.prompt(
-      'Search the data related to an ESNcard and paste it in this document',
-      'ESNcard number',
+      'Busca los datos relacionados con un nº de ESNcard y los envia a este formulario',
+      'Nº ESNcard',
       ui.ButtonSet.OK_CANCEL);
   
   var activeCell = SpreadsheetApp.getActiveSpreadsheet().getActiveCell();
@@ -54,7 +55,7 @@ function search(esnCardNumber, activeCell) {
   if(documentID != "" && documentID != null) {
     
     var sheetESNcard = SpreadsheetApp.openById(documentID).getSheetByName("Respuestas de formulario 1");
-    var sheetSearch = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Hoja 1");
+    var sheetSearch = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SpreadsheetApp.getActiveSheet().getName());
     
     var esnCards = sheetESNcard.getRange("A:Z").getValues();
     
@@ -69,21 +70,40 @@ function search(esnCardNumber, activeCell) {
         // surname
         sheetSearch.getRange(activeCell.getRow(), activeCell.getColumn() + 2).setValue(esnCards[i][3]);
         // date of birth
-        sheetSearch.getRange(activeCell.getRow(), activeCell.getColumn() + 3).setValue(esnCards[i][4]);
+        sheetSearch.getRange(activeCell.getRow(), activeCell.getColumn() + 3).setValue(esnCards[i][4]).setHorizontalAlignment("center");
         // phone number
-        sheetSearch.getRange(activeCell.getRow(), activeCell.getColumn() + 4).setValue(esnCards[i][5]);
+        sheetSearch.getRange(activeCell.getRow(), activeCell.getColumn() + 4).setValue(esnCards[i][5]).setHorizontalAlignment("left");
         // email
-        sheetSearch.getRange(activeCell.getRow(), activeCell.getColumn() + 5).setValue(esnCards[i][6]);
+        sheetSearch.getRange(activeCell.getRow(), activeCell.getColumn() + 5).setValue(esnCards[i][6]).setHorizontalAlignment("left");
         // nationality
-        sheetSearch.getRange(activeCell.getRow(), activeCell.getColumn() + 6).setValue(esnCards[i][7]);
-        
+        sheetSearch.getRange(activeCell.getRow(), activeCell.getColumn() + 6).setValue(esnCards[i][7]).setHorizontalAlignment("center");
+        // documento
+        sheetSearch.getRange(activeCell.getRow(), activeCell.getColumn() + 7).setValue(esnCards[i][8]).setHorizontalAlignment("center");
+        // numero del documento
+        sheetSearch.getRange(activeCell.getRow(), activeCell.getColumn() + 8).setValue(esnCards[i][9]).setHorizontalAlignment("center");
+        // fecha de caducidad
+        sheetSearch.getRange(activeCell.getRow(), activeCell.getColumn() + 9).setValue(esnCards[i][10]).setHorizontalAlignment("center");
+        // universidad
+        sheetSearch.getRange(activeCell.getRow(), activeCell.getColumn() + 10).setValue(esnCards[i][11]).setHorizontalAlignment("left");
         break;
       } 
     }
     if(activeCell.isBlank()){
-      SpreadsheetApp.getUi().alert("There is no one registered with the given ESNcard number");
+      SpreadsheetApp.getUi().alert("No hay nadie registrado con ese número de ESNcard");
     }
   } else {
-    SpreadsheetApp.getUi().alert("You must set up and ID first");
+    SpreadsheetApp.getUi().alert("Tienes que configurar primero la hoja de ESNcards");
+    showPromptConfiguration();
+  }
+}
+
+function fillRange(){
+  var activeRange = SpreadsheetApp.getActiveSpreadsheet().getActiveRange();
+  var initialCellIndex = 1;
+  var numRows = activeRange.getNumRows();
+  while(initialCellIndex <= numRows){
+    var currentCell = activeRange.getCell(initialCellIndex, 1);
+    search(currentCell.getValue(),currentCell);
+    initialCellIndex++;
   }
 }
