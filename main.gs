@@ -5,11 +5,11 @@ var scriptProperties = PropertiesService.getScriptProperties();
 function onOpen() {
   SpreadsheetApp.getUi() // Or DocumentApp or FormApp.
       .createMenu('ESN')
-      .addItem('Configuración', 'showPromptConfiguration')
-      .addItem('Buscar ESNcard', 'showPromptSearch')
-      .addItem('Rellenar rango', 'fillRange')
+      .addItem('Configuration', 'showPromptConfiguration')
+      .addItem('Search ESNcard', 'showPromptSearch')
+      .addItem('Fill range', 'fillRange')
       .addToUi();
-  
+
 }
 
 function showPromptConfiguration() {
@@ -19,50 +19,50 @@ function showPromptConfiguration() {
       'Setting things up',
       'Introduce the ID of the Spreadsheet you wish to fetch from',
       ui.ButtonSet.OK_CANCEL);
-  
+
   // Process the user's response.
   var button = result.getSelectedButton();
   var text = result.getResponseText();
-  
+
   if (button == ui.Button.OK) {
     scriptProperties.setProperty('DOCUMENT_ID', text);
     ui.alert('The ID has been save correctly');
-  } 
+  }
 }
 
 function showPromptSearch() {
   var ui = SpreadsheetApp.getUi(); // Same variations.
 
   var result = ui.prompt(
-      'Busca los datos relacionados con un nº de ESNcard y los envia a este formulario',
+      'Search the data related to an ESNcard and paste it in this document',
       'Nº ESNcard',
       ui.ButtonSet.OK_CANCEL);
-  
+
   var activeCell = SpreadsheetApp.getActiveSpreadsheet().getActiveCell();
-  
+
   // Process the user's response.
   var button = result.getSelectedButton();
   var text = result.getResponseText();
-  
+
   if (button == ui.Button.OK) {
     search(text, activeCell);
-  } 
+  }
 }
 
 function search(esnCardNumber, activeCell) {
   var documentID = scriptProperties.getProperty('DOCUMENT_ID');
 
   if(documentID != "" && documentID != null) {
-    
+
     var sheetESNcard = SpreadsheetApp.openById(documentID).getSheetByName("Respuestas de formulario 1");
     var sheetSearch = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SpreadsheetApp.getActiveSheet().getName());
-    
+
     var esnCards = sheetESNcard.getRange("A:Z").getValues();
-    
+
     for (var i = 0; i< esnCards.length; i++) {
-      
+
       if(esnCards[i][1] == esnCardNumber && esnCards[i][1] != undefined){
-        
+
         // ESNcard number
         sheetSearch.getRange(activeCell.getA1Notation()).setValue(esnCards[i][1]);
         // name
@@ -79,20 +79,20 @@ function search(esnCardNumber, activeCell) {
         sheetSearch.getRange(activeCell.getRow(), activeCell.getColumn() + 6).setValue(esnCards[i][7]).setHorizontalAlignment("center");
         // documento
         sheetSearch.getRange(activeCell.getRow(), activeCell.getColumn() + 7).setValue(esnCards[i][8]).setHorizontalAlignment("center");
-        // numero del documento
+        // document number
         sheetSearch.getRange(activeCell.getRow(), activeCell.getColumn() + 8).setValue(esnCards[i][9]).setHorizontalAlignment("center");
-        // fecha de caducidad
+        // expiration date
         sheetSearch.getRange(activeCell.getRow(), activeCell.getColumn() + 9).setValue(esnCards[i][10]).setHorizontalAlignment("center");
-        // universidad
+        // univesity
         sheetSearch.getRange(activeCell.getRow(), activeCell.getColumn() + 10).setValue(esnCards[i][11]).setHorizontalAlignment("left");
         break;
-      } 
+      }
     }
     if(activeCell.isBlank()){
-      SpreadsheetApp.getUi().alert("No hay nadie registrado con ese número de ESNcard");
+      SpreadsheetApp.getUi().alert("There is no one registered with the given ESNcard number");
     }
   } else {
-    SpreadsheetApp.getUi().alert("Tienes que configurar primero la hoja de ESNcards");
+    SpreadsheetApp.getUi().alert("You must set up an ID first. Must be the ID of the spreadsheet containing the ESNcards.");
     showPromptConfiguration();
   }
 }
