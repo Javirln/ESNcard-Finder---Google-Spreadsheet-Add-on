@@ -2,7 +2,11 @@
 
 var scriptProperties = PropertiesService.getScriptProperties();
 
-function onOpen() {
+function onInstall(e){
+    onOpen(e);
+}
+
+function onOpen(e) {
   SpreadsheetApp.getUi() // Or DocumentApp or FormApp.
       .createMenu('ESN')
       .addItem('Configuration', 'showPromptConfiguration')
